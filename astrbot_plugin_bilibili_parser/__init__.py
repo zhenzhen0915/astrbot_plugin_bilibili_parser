@@ -1,0 +1,1 @@
+"""AstrBot Bilibili parser plugin."""

@@ -1,0 +1,79 @@
+{
+  "dynamic_enabled": {
+    "description": "开启 Bilibili 动态订阅推送（订阅在 QQ bili 指令或插件 Web 页面管理）",
+    "type": "bool",
+    "default": false
+  },
+  "dynamic_interval": {
+    "description": "每个 UP 主的动态检查间隔（秒，最少 60），实际请求会错开并在受限时退避",
+    "type": "int",
+    "default": 180
+  },
+  "group_filter_mode": {
+    "description": "QQ群过滤模式：whitelist 仅白名单；blacklist 排除黑名单；all 全部群",
+    "type": "string",
+    "options": ["whitelist", "blacklist", "all"],
+    "default": "whitelist"
+  },
+  "allowed_group_ids": {
+    "description": "白名单群号（whitelist 模式生效），多个用逗号、空格或换行分隔；留空不解析任何群",
+    "type": "string",
+    "default": ""
+  },
+  "blocked_group_ids": {
+    "description": "黑名单群号（blacklist 模式生效），多个用逗号、空格或换行分隔；留空允许全部群",
+    "type": "string",
+    "default": ""
+  },
+  "parse_share_cards": {
+    "description": "自动解析 QQ 中的 Bilibili 小程序、JSON 分享卡片和 XML 分享卡片",
+    "type": "bool",
+    "default": true
+  },
+  "comment_sort": {
+    "description": "评论选择：likes 按热门候选的点赞数选两条；hot 按 Bilibili 热门顺序选两条",
+    "type": "string",
+    "options": ["likes", "hot"],
+    "default": "likes"
+  },
+  "max_video_mb": {
+    "description": "单个视频下载上限（MB）",
+    "type": "int",
+    "default": 200
+  },
+  "send_video": {
+    "description": "发送视频文件。关闭后只发磨砂卡片和图文，不再下载视频，可避开下载失败和带宽占用",
+    "type": "bool",
+    "default": true
+  },
+  "cache_hours": {
+    "description": "已下载视频保留时间（小时），供 NapCat 读取",
+    "type": "int",
+    "default": 2
+  },
+  "cooldown_seconds": {
+    "description": "同一群同一视频的重复解析间隔（秒）",
+    "type": "int",
+    "default": 60
+  },
+  "render_card": {
+    "description": "使用 AstrBot 原生 HTML 渲染磨砂卡片，随后发送视频；渲染失败自动回退图文",
+    "type": "bool",
+    "default": true
+  },
+  "live_enabled": {
+    "description": "开启直播检查、通知和近 30 天记录；独立于动态总开关，需在订阅中选择通知群和记录主播",
+    "type": "bool",
+    "default": false
+  },
+  "live_interval": {
+    "description": "直播检查间隔（秒，30 到 3600），默认 60；连续两次检测下播后发送结束通知",
+    "type": "int",
+    "default": 60
+  },
+  "send_cover_image": {
+    "description": "关闭卡片或渲染失败时，额外发送封面图片",
+    "type": "bool",
+    "default": true
+  }
+}

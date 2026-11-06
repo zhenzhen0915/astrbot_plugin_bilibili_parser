@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bilibili 动态与直播订阅</title><link rel="stylesheet" href="./style.css"></head>
+<body>
+<main>
+  <header class="hero"><div><div class="eyebrow">ASTRBOT · BILIBILI</div><h1>动态与直播订阅</h1><p>选择通知群，接收动态与直播消息，查看主播近 30 天记录。</p></div><button id="refresh" class="secondary">刷新</button></header>
+  <div id="notice" role="status" aria-live="polite" hidden></div>
+  <div id="connection" class="banner">正在连接 AstrBot…</div>
+  <section class="metrics" aria-label="运行概况"><div><span>群订阅</span><strong id="metricSubs">—</strong></div><div><span>UP 主</span><strong id="metricCreators">—</strong></div><div><span>待发送</span><strong id="metricPending">—</strong></div><div><span>已完成</span><strong id="metricDone">—</strong></div></section>
+  <nav aria-label="管理页面"><button class="tab active" data-tab="subscriptions">订阅管理</button><button class="tab" data-tab="deliveries">推送记录</button><button class="tab" data-tab="settings">设置</button></nav>
+  <section id="subscriptions" class="panel">
+    <div class="toolbar"><input id="search" type="search" placeholder="搜索群号、UP 主或 UID" aria-label="搜索订阅"><button id="add">＋ 添加订阅</button></div>
+    <p class="hint">动态首次订阅只建立基线；直播首次检测正在开播时会通知。每个群可独立开启通知和记录。</p>
+    <div class="table-wrap"><table><thead><tr><th>UP 主</th><th>推送到</th><th>内容</th><th>状态 / 最近成功检查</th><th>操作</th></tr></thead><tbody id="subscriptionRows"></tbody></table></div>
+    <div id="empty" class="empty" hidden>还没有订阅。添加一个 UP 主，或在 QQ 群发送「bili 订阅 UID」。</div>
+  </section>
+  <section id="deliveries" class="panel" hidden>
+    <p class="hint">显示最近 100 条发送记录。“待核对”表示发送结果不明确，请先查看群记录。测试推送有独立标记。</p>
+    <div class="table-wrap"><table><thead><tr><th>动态 / 目标群</th><th>状态</th><th>卡片 / 视频</th><th>时间</th><th>详情与操作</th></tr></thead><tbody id="deliveryRows"></tbody></table></div>
+    <h2>最近的检查与测试</h2><div id="requestRows"></div>
+  </section>
+  <section id="settings" class="panel" hidden>
+    <form id="settingsForm" class="settings-form">
+      <div class="section-title"><h2>运行设置</h2><button id="loadSettings" type="button" class="secondary">重新载入设置</button></div>
+      <label class="check"><input id="dynamicEnabled" type="checkbox">开启动态订阅推送</label>
+      <label class="check"><input id="liveEnabled" type="checkbox">开启直播检查、通知和记录</label>
+      <label>直播检查间隔（秒）<input id="liveInterval" type="number" min="30" max="3600" required></label>
+      <p class="hint">直播与动态总开关相互独立。每个群可分别开启主播的直播通知和记录；连续两次检测下播后发送结束通知。</p>
+      <label>动态检查间隔（秒）<input id="interval" type="number" min="60" max="86400" required></label><p class="hint">默认 180 秒；接口受限会自动退避，多 UP 主的请求会错开。</p>
+      <h2>QQ群过滤</h2><p class="hint">与视频链接解析共用。选择“全部群”仍然只向已经订阅的群推送。</p>
+      <label>过滤模式<select id="groupMode"><option value="whitelist">仅白名单群</option><option value="blacklist">排除黑名单群</option><option value="all">允许全部群</option></select></label>
+      <label>白名单群号<textarea id="allowedGroups" rows="2" placeholder="多个群号用逗号、空格或换行分隔"></textarea></label>
+      <label>黑名单群号<textarea id="blockedGroups" rows="2"></textarea></label>
+      <div class="two-columns"><label>视频上限（MB）<input id="maxVideo" type="number" min="1" max="2048" required></label><label>缓存保留（小时）<input id="cacheHours" type="number" min="1" max="168" required></label></div>
+      <h2>Bilibili 登录状态</h2><p id="cookieState" class="hint"></p>
+      <label>更新 Cookie（可选）<input id="cookie" type="password" autocomplete="off" placeholder="留空保留当前配置"></label><label class="check"><input id="clearCookie" type="checkbox">删除已保存的 Cookie</label>
+      <p class="hint">仅在本机保存，不会在 QQ、安装包或普通接口中返回原值。Cookie 不保证解除网络侧的访问限制，接口状态以最近检查结果为准。</p>
+      <button type="submit">保存设置</button>
+    </form>
+  </section>
+  <footer>QQ 指令：bili 帮助 · bili 列表 · bili 状态</footer>
+</main>
+<dialog id="editor"><form id="subscriptionForm">
+  <div class="section-title"><h2 id="editorTitle">添加订阅</h2><button type="button" id="closeEditor" class="secondary">关闭</button></div>
+  <label>UP 主 UID 或主页地址<input id="creatorInput" required placeholder="123456 或 https://space.bilibili.com/123456"></label>
+  <div class="verify-row"><button id="resolveCreator" type="button" class="secondary">核对 UP 主</button><span id="creatorResult" role="status"></span></div>
+  <fieldset id="groupField"><legend>推送到这些群</legend><div id="groupChoices">正在加载群列表…</div></fieldset>
+  <fieldset><legend>动态类型</legend><div id="typeChoices" class="checks"></div></fieldset>
+  <label class="check"><input id="sendVideo" type="checkbox" checked>视频投稿附上 MP4 文件</label>
+  <label class="check"><input id="liveNotify" type="checkbox">本群接收开播和下播通知</label>
+  <label class="check"><input id="liveRecord" type="checkbox">记录此主播直播场次（保留 30 天）</label>
+  <p class="hint">只需直播功能时可取消所有动态类型。直播内容包含标题、分区和封面，不录制视频；首次检查正在直播时会发送通知。</p>
+  <p class="hint">保存后自动应用；请在设置开启对应总开关。动态不补发历史，直播从启用后开始记录。</p>
+  <button id="saveSubscription" type="submit">保存订阅</button>
+</form></dialog>
+<dialog id="confirmation"><form method="dialog"><h2>确认操作</h2><p id="confirmationText"></p><div class="actions"><button value="cancel" class="secondary">返回</button><button value="ok">确认</button></div></form></dialog>
+<dialog id="liveHistory"><div class="section-title"><h2 id="liveHistoryTitle">直播记录</h2><button id="closeLiveHistory" class="secondary">关闭</button></div><p class="hint">近 30 天记录，时间均为北京时间。结束时间与时长是轮询估计，未结束场次统计至最后检测；停机或接口失败可能造成缺口。按月展示；跨日直播按日期分摊时长，灰色日期在记录窗口之外。</p><div class="actions"><button id="historyPrevious" class="secondary">上个月</button><span id="historyPage"></span><button id="historyNext" class="secondary">下个月</button><button id="exportHistory">导出月历 PNG</button></div><div id="historyRows"></div></dialog>
+<script type="module" src="./app.js"></script>
+</body></html>

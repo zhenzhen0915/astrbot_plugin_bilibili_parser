@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1024,initial-scale=1">
+<style>
+* { box-sizing: border-box; }
+html { width: 1024px; margin: 0; padding: 0; background: #243f48; }
+body { margin: 0; width: 1024px; min-height: 1536px; padding: 48px 52px 52px; position: relative; color: #13283e; font-family: "Noto Sans CJK SC", "Noto Sans SC", "Microsoft YaHei", sans-serif; }
+body.dynamic-card { min-height: 0; }
+.backdrop { position: absolute; inset: 0; overflow: hidden; z-index: 0; }
+.backdrop img { width: 100%; height: 100%; object-fit: cover; object-position: center; filter: saturate(1.06) brightness(.97); }
+.backdrop:after { content: ""; position: absolute; inset: 0; background: linear-gradient(130deg,rgba(19,59,69,.09),rgba(242,151,181,.06) 55%,rgba(73,48,72,.12)); }
+.card { position: relative; overflow: hidden; isolation: isolate; border-radius: 32px; border: 2px solid #ffffffe6; background: linear-gradient(115deg,#fff9,#fff7 45%,#ffdeec88); backdrop-filter: blur(20px) saturate(1.05); -webkit-backdrop-filter: blur(20px) saturate(1.05); box-shadow: 0 14px 40px #1b183936, 0 0 18px #ffb9d63d, inset 0 0 20px #ffffff82, inset 1px 0 3px #fff; }
+.card:before { content: ""; position: absolute; z-index: -1; inset: 0; pointer-events: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E"); opacity: .1; mix-blend-mode: soft-light; }
+.header { padding: 14px 28px 12px; position: relative; overflow: hidden; border-bottom: 1px solid #ffffffc7; background: linear-gradient(100deg,#fff2,#fff1); }
+.header-art { position: absolute; right: -90px; top: -120px; width: 70%; height: 400px; object-fit: cover; object-position: 50% 38%; opacity: .38; -webkit-mask-image: linear-gradient(90deg,transparent,#000 24%,#000 86%,transparent); mask-image: linear-gradient(90deg,transparent,#000 24%,#000 86%,transparent); }
+.brand-row { display: flex; align-items: center; gap: 22px; height: 114px; position: relative; margin-left: -6px; }
+.qr { width: 94px; height: 114px; padding: 3px 3px 6px; flex-shrink: 0; text-align: center; border-radius: 13px; background: #fffffff0; box-shadow: 0 0 12px #ffffffa8; }
+.qr img { display: block; width: 88px; height: 88px; image-rendering: pixelated; }
+.qr span { display: block; line-height: 20px; font-size: 16px; font-weight: 600; }
+.bot-avatar { width: 110px; height: 110px; border-radius: 50%; overflow: hidden; position: relative; border: 3px solid #fff; flex-shrink: 0; box-shadow: 0 0 12px #ffffff63; }
+.bot-avatar img { position: absolute; width: 390%; max-width: none; left: -147%; top: -107%; }
+.brand { flex: 1; }
+.brand strong { display: block; font-size: 40px; line-height: 1.2; font-weight: 750; color: #dd6588; letter-spacing: -.8px; }
+.brand span { display: block; font-size: 24px; line-height: 1.4; color: #df6289; margin-top: 1px; white-space: nowrap; }
+.badge { align-self: flex-start; margin-top: 7px; padding: 7px 18px; border: 1px solid #ffffffd9; background: #fff9; color: #dd6489; font-size: 20px; line-height: 25px; border-radius: 24px; white-space: nowrap; }
+h1 { position: relative; margin: 14px -6px 0 0; padding: 10px 29px; min-height: 112px; display: flex; align-items: center; border-radius: 16px; border: 1px solid #ffffffb0; border-left: 7px solid #f377a0; background: linear-gradient(110deg,#ffffffa3,#ffffff6b); box-shadow: inset 0 0 16px #ffffff47; font-size: 34px; line-height: 1.32; font-weight: 750; overflow-wrap: anywhere; }
+.content { padding: 20px 28px 0; }
+.author-row { display: flex; align-items: center; gap: 26px; min-height: 70px; margin-bottom: 16px; }
+.avatar { height: 70px; width: 70px; flex-shrink: 0; border-radius: 50%; background: #fff9; overflow: hidden; display: flex; align-items: center; justify-content: center; color: #bd6282; font-size: 25px; border: 2px solid #ffffffed; box-shadow: 0 3px 12px #3c354716; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.author-name { font-size: 28px; line-height: 1.25; font-weight: 750; overflow-wrap: anywhere; }
+.author-detail { margin-top: 5px; color: #607b99; font-size: 24px; line-height: 1.35; }
+.cover { position: relative; overflow: hidden; height: 372px; border-radius: 15px; background: #d4cfd4; border: 1px solid #ffffffb0; box-shadow: 0 0 12px #ffffff3d; }
+.cover img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.cover-placeholder { height: 100%; display: flex; justify-content: center; align-items: center; font-size: 28px; color: #6b7386; }
+.duration { position: absolute; right: 15px; bottom: 14px; border-radius: 8px; padding: 6px 11px; display: flex; align-items: center; gap: 9px; background: #14222aca; color: #fff; font-size: 22px; line-height: 27px; }
+.duration svg { width: 18px; height: 18px; fill: #fff; }
+.stats { display: grid; grid-template-columns: repeat(6,1fr); background: #ffffff30; border: 1px solid #ffffffbd; border-radius: 18px; margin-top: 12px; height: 128px; padding: 12px 0 10px; box-shadow: inset 0 0 16px #ffffff30,0 0 8px #ffffff18; }
+.metric { display: flex; flex-direction: column; align-items: center; text-align: center; border-right: 1px solid #ffffff83; min-width: 0; }
+.metric:last-child { border-right: 0; }
+.icon { width: 34px; height: 34px; stroke: #ed7298; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.metric-value { margin-top: 3px; font-size: 29px; line-height: 1.3; font-weight: 700; font-variant-numeric: tabular-nums; }
+.metric-label { color: #607e9a; font-size: 23px; line-height: 1.3; }
+.tags { display: flex; gap: 16px; flex-wrap: nowrap; margin: 12px 0 0; height: 52px; }
+.tag { max-width: calc((100% - 32px) / 3); min-width: 142px; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 22px; line-height: 30px; padding: 10px 25px; color: #247f99; background: #b7e4f076; border: 1px solid #ffffffe0; border-radius: 28px; box-shadow: inset 0 0 12px #ffffff24; }
+.description-section { margin-top: 20px; min-height: 124px; }
+.comments-section { margin-top: 18px; }
+h2 { display: flex; align-items: center; gap: 17px; font-size: 28px; line-height: 36px; margin: 0 0 10px; }
+h2:before { content: ""; width: 7px; height: 30px; flex-shrink: 0; border-radius: 8px; background: #f5749f; box-shadow: 0 0 12px #ffb5d1,0 0 5px #fff; }
+.description { margin: 0; min-height: 72px; font-size: 23px; line-height: 36px; overflow-wrap: anywhere; }
+.comment { min-height: 96px; padding: 14px 18px; display: flex; align-items: flex-start; gap: 18px; background: linear-gradient(105deg,#ffffff21,#fff1); border: 1px solid #ffffffed; border-radius: 18px; box-shadow: inset 0 0 15px #ffffff1a,0 0 6px #ffffff24; margin-bottom: 10px; }
+.comment:last-child { margin-bottom: 0; }
+.comment .avatar { width: 64px; height: 64px; }
+.comment-body { flex: 1; min-width: 0; }
+.comment-meta { display: flex; align-items: center; gap: 12px; color: #647c99; font-size: 20px; line-height: 28px; }
+.comment-author { flex: 1; overflow-wrap: anywhere; }
+.likes { flex-shrink: 0; display: flex; gap: 7px; align-items: center; font-size: 18px; }
+.likes .icon { width: 27px; height: 27px; }
+.comment-text { margin-top: 3px; font-size: 22px; line-height: 32px; overflow-wrap: anywhere; white-space: pre-wrap; }
+.empty { color: #60728b; font-size: 22px; min-height: 96px; padding: 12px 0; }
+footer { display: flex; align-items: center; justify-content: flex-end; margin-top: 16px; padding: 0 0 3px; min-height: 60px; border-top: 1px solid #ffffffe0; }
+.credit { border: 2px solid #ffbddb; border-radius: 32px; padding: 11px 24px; font-size: 19px; line-height: 26px; color: #247fa0; background: linear-gradient(110deg,#fff7,#ffd2e79e); box-shadow: 0 0 18px #ff90c7a6,0 0 5px #fff, inset 0 0 11px #ffffffd9; white-space: nowrap; }
+.credit span { color: #de5d89; }
+.gallery { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:20px 0; }
+.gallery img { width:100%; height:260px; object-fit:cover; border-radius:14px; border:1px solid #fff9; }
+.gallery.single { grid-template-columns:1fr; }
+.gallery.single img { height:auto; max-height:900px; object-fit:contain; }
+.dynamic-text { white-space:pre-wrap; font-size:25px; line-height:1.65; overflow-wrap:anywhere; }
+.dynamic-link { font-size:20px; color:#375a73; overflow-wrap:anywhere; margin:25px 0; }
+</style>
+</head>
+<body{% if dynamic %} class="dynamic-card"{% endif %}>
+{% macro icon(name) -%}
+<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+{% if name == 'play' %}<path d="M7 3.5 20 12 7 20.5Z"/>
+{% elif name == 'like' %}<path d="M8 10 12 3c2-1 3 0 2 5h5c2 0 2 2 1 4l-2 8H8ZM3 10h5v10H3Z"/>
+{% elif name == 'coin' %}<circle cx="12" cy="12" r="9"/><text x="12" y="16" text-anchor="middle" stroke="none" fill="#ed7298" font-size="12" font-weight="700">投</text>
+{% elif name == 'star' %}<path d="m12 2 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z"/>
+{% elif name == 'danmaku' %}<path d="M4 4h16v13h-5l-4 4v-4H4Z M7 8h10M7 12h7"/>
+{% elif name == 'comment' %}<path d="M4 4h16v14H9l-5 3Z"/><circle cx="8" cy="11" r=".7"/><circle cx="12" cy="11" r=".7"/><circle cx="16" cy="11" r=".7"/>
+{% else %}<path d="m14 3 7 7-7 7v-5C7 12 4 15 3 20V11c2-4 6-5 11-5Z"/>{% endif %}
+</svg>
+{%- endmacro %}
+<div class="backdrop"><img src="{{ background | e }}"></div>
+<article class="card">
+  <header class="header">
+    <img class="header-art" src="{{ character | e }}">
+    <div class="brand-row">
+      <div class="qr"><img src="{{ qr | e }}" alt="二维码"><span>{{ '直播间' if live else '查看动态' if dynamic else '查看视频' }}</span></div>
+      <div class="bot-avatar"><img src="{{ character | e }}"></div>
+      <div class="brand"><strong>AstrBot</strong><span>{{ 'Bilibili 直播通知' if live else 'Bilibili 动态更新' if dynamic else 'Bilibili 视频解析' }}</span></div>
+      <div class="badge">{{ '测试推送' if is_test else '直播通知' if live else '动态更新' if dynamic else '视频卡片' }}</div>
+    </div>
+    <h1>{{ title | e }}</h1>
+  </header>
+  <div class="content">
+    <div class="author-row">
+      <div class="avatar">{% if author_avatar %}<img src="{{ author_avatar | e }}">{% else %}{{ author_initial | e }}{% endif %}</div>
+      <div><div class="author-name">{{ author | e }}</div><div class="author-detail">{% if dynamic %}{{ published | e }}{% else %}UP 主 · 时长 {{ duration | e }}{% if page > 1 %} · P{{ page }}{% endif %}{% endif %}</div></div>
+    </div>
+    {% if dynamic %}
+    <p class="dynamic-text">{{ description | e }}</p>
+    {% if gallery %}<div class="gallery {{ 'single' if gallery|length == 1 else '' }}">{% for image in gallery %}<img src="{{ image | e }}">{% endfor %}</div>{% endif %}
+    {% if stats %}<div class="stats" style="grid-template-columns:repeat({{ stats|length }},1fr)">{% for stat in stats %}<div class="metric">{{ icon(stat.icon) }}<div class="metric-value">{{ stat.value | e }}</div><div class="metric-label">{{ stat.label | e }}</div></div>{% endfor %}</div>{% endif %}
+    <div class="dynamic-link">{{ '原动态还有更多图片。' if more_images else '' }}{{ '扫码进入直播间' if live else '扫码查看完整动态' }}<br>{{ url | e }}</div>
+    {% else %}
+    <div class="cover">
+      {% if cover %}<img src="{{ cover | e }}">{% else %}<div class="cover-placeholder">封面暂不可用</div>{% endif %}
+      <div class="duration"><svg viewBox="0 0 20 20"><path d="M4 2 18 10 4 18Z"/></svg>{{ duration | e }}</div>
+    </div>
+    <div class="stats">{% for stat in stats %}<div class="metric">{{ icon(stat.icon) }}<div class="metric-value">{{ stat.value | e }}</div><div class="metric-label">{{ stat.label | e }}</div></div>{% endfor %}</div>
+    {% if tags %}<div class="tags">{% for tag in tags[:3] %}<div class="tag">{{ tag | e }}</div>{% endfor %}</div>{% endif %}
+    <section class="description-section"><h2>视频简介</h2><p class="description">{{ description | e }}</p></section>
+    <section class="comments-section"><h2>评论</h2>
+      {% for comment in comments %}
+      <div class="comment">
+        <div class="avatar">{% if comment.avatar %}<img src="{{ comment.avatar | e }}">{% else %}{{ comment.initial | e }}{% endif %}</div>
+        <div class="comment-body"><div class="comment-meta"><span class="comment-author">{{ comment.author | e }}</span><span class="likes">{{ icon('like') }}{{ comment.likes | e }}</span></div><div class="comment-text">{{ comment.text | e }}</div></div>
+      </div>
+      {% else %}<div class="empty">{{ comments_empty | e }}</div>{% endfor %}
+    </section>
+    {% endif %}
+    <footer><div class="credit"><span>Created By</span> AstrBot Plugin bilibili</div></footer>
+  </div>
+</article>
+</body>
+</html>

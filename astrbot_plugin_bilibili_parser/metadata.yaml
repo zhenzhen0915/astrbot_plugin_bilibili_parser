@@ -1,0 +1,8 @@
+name: astrbot_plugin_bilibili_parser
+display_name: Bilibili 视频解析、动态与直播订阅
+desc: 视频和动态群推送，直播通知与时长统计，近 30 天直播记录图片；支持 QQ 指令和 Web 管理。
+version: 0.5.2
+author: Bilibili Video Share
+support_platforms:
+  - aiocqhttp
+astrbot_version: ">=4.24.1,<5"
